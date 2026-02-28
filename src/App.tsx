@@ -1,91 +1,134 @@
-import { useEffect, useRef, useState } from "react";
+import { useState, useMemo } from "react";
 import { Navbar } from "./components/Navbar";
 import { Button } from "./components/ui/button";
+// import { usePomodoro } from "./hooks/pomodoro";
+import { useTimer } from "react-timer-hook";
 
-console.log("Me he montado correctamente");
+if (import.meta.env.MODE === "development") {
+  console.log("Me he montado correctamente");
+}
 
-const POMODORO_TIME = 25 * 60;
+const format = (value: number): string => String(value).padStart(2, "0");
 
 export const App = () => {
-  // Variables
-  const [timeLeft, setTimeLeft] = useState<number>(POMODORO_TIME);
-  const [isRuning, setIsRunning] = useState<boolean>(false);
+  const [focusTime, setFocusTime] = useState(25);
+  const [breakTime, setBreakTime] = useState(5);
+  const [mode, setMode] = useState<"focus" | "break">("focus");
 
-  const intervalRef = useRef<number | null>(null);
+  const duration = useMemo(
+    () => (mode === "focus" ? focusTime : breakTime),
+    [mode, focusTime, breakTime],
+  );
 
-  // Counter logic
-  useEffect(() => {
-    if (!isRuning) return;
+  const getExpiryTime = (mins: number) => {
+    const time = new Date();
+    time.setSeconds(time.getSeconds() + Number(mins) * 60);
+    return time;
+  };
 
-    intervalRef.current = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(intervalRef.current!);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+  const { seconds, minutes, hours, start, pause, restart, isRunning } =
+    useTimer({
+      expiryTimestamp: getExpiryTime(duration),
+      autoStart: false,
+    });
 
-    return () => clearInterval(intervalRef.current!);
-  }, [isRuning]);
+  const handleModeChange = (newMode: "focus" | "break") => {
+    setMode(newMode);
+    restart(getExpiryTime(newMode === "focus" ? focusTime : breakTime), false);
+  };
 
-  // Handlers
+  const handleStartPause = () => {
+    if (isRunning) {
+      pause();
+    } else {
+      start();
+    }
+  };
 
-  const handleStart = () => setIsRunning(true);
-  const handlePause = () => setIsRunning(false);
   const handleReset = () => {
-    setIsRunning(false);
-    setTimeLeft(POMODORO_TIME);
+    restart(getExpiryTime(duration), false);
   };
 
-  // Format to mm:ss
-
-  const formatTime = (seconds: number) => {
-    const minutes = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-
-    return `${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
-  };
+  const totalMinutes = hours * 60 + minutes;
 
   return (
     <>
       <div className="flex min-h-svh flex-col items-center justify-center">
         <Navbar />
         <div className="h-screen w-2/3 flex flex-col justify-center items-center">
-          <div className="flex flex-row gap-1">
-            {/* Deep and Work time */}
-            <Button className="h-10 w-60 text-black bg-white">Deep Work</Button>
-            <Button className="h-10 w-60 text-black bg-white">
-              Break Time
-            </Button>
-          </div>
-          <p className="text-9xl font-bold m-10 text-white">
-            {formatTime(timeLeft)}
-          </p>
-          <div className="flex flex-col gap-2">
-            {/* Start/Pause and Reset Buttons */}
+          {/* Config Inputs */}
 
-            <div className="flex flex-row gap-2">
+          {import.meta.env.MODE === "development" ? (
+            <div className="bg-blue-300">
+              <div>
+                <label>Enfoque (min): </label>
+                <input
+                  type="number"
+                  value={focusTime}
+                  onChange={(e) => setFocusTime(e.target.value)}
+                />
+              </div>
+              <div>
+                <label>Descanso (min): </label>
+                <input
+                  type="number"
+                  value={breakTime}
+                  onChange={(e) => setBreakTime(e.target.value)}
+                />
+              </div>
+            </div>
+          ) : null}
+          <div className="flex flex-col gap-1">
+            <div className="flex flex-row gap-1">
               <Button
-                className="bg-white h-10 w-60 text-black"
-                onClick={handleStart}
+                className={`
+                h-10 w-60 text-black bg-white
+                ${
+                  mode === "focus"
+                    ? "text-black bg-white"
+                    : "bg-transparent text-white hover:bg-transparent hover:cursor-pointer"
+                }
+                  `}
+                onClick={() => handleModeChange("focus")}
               >
-                Start
+                Focus
               </Button>
               <Button
-                className="bg-white h-10 w-60 text-black"
-                onClick={handlePause}
+                className={`
+                h-10 w-60 text-black bg-white
+                ${
+                  mode === "break"
+                    ? "text-black bg-white"
+                    : "bg-transparent text-white hover:bg-transparent hover:cursor-pointer"
+                }
+                  `}
+                onClick={() => handleModeChange("break")}
               >
-                Pause
+                Break
               </Button>
             </div>
-            <Button
-              className="bg-white h-10 w-120 text-black"
-              onClick={handleReset}
-            >
-              Reset
-            </Button>
+          </div>
+          <p className="text-9xl font-bold m-10 text-white">
+            {format(totalMinutes)}:{format(seconds)}
+          </p>
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-row gap-2">
+              <Button
+                className="bg-white h-10 w-120 text-black"
+                onClick={handleStartPause}
+              >
+                {isRunning ? "Stop" : "Start"}
+              </Button>
+            </div>
+
+            {isRunning && (
+              <Button
+                className="bg-white h-10 w-120 text-black"
+                onClick={handleReset}
+              >
+                Reset
+              </Button>
+            )}
           </div>
         </div>
       </div>
