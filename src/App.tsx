@@ -65,7 +65,7 @@ export const App = () => {
                 <input
                   type="number"
                   value={focusTime}
-                  onChange={(e) => setFocusTime(e.target.value)}
+                  onChange={(e) => setFocusTime(Number(e.target.value))}
                 />
               </div>
               <div>
@@ -73,7 +73,7 @@ export const App = () => {
                 <input
                   type="number"
                   value={breakTime}
-                  onChange={(e) => setBreakTime(e.target.value)}
+                  onChange={(e) => setBreakTime(Number(e.target.value))}
                 />
               </div>
             </div>
