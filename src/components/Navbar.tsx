@@ -20,9 +20,11 @@ export const Navbar = () => {
           <p className="text-white transition-all duration-200">Toki Pomito</p>
         </Button>
 
-        <Button className="group bg-gray-800 w-10 fixed top-3 right-3 text-white hover:text-black">
-          <CiSettings className="size-6 group-hover:text-black group-hover:cursor-pointer transition-colors duration-200" />
-        </Button>
+        {import.meta.env.MODE === "development" ? (
+          <Button className="group bg-gray-800 w-10 fixed top-3 right-3 text-white hover:text-black">
+            <CiSettings className="size-6 group-hover:text-black group-hover:cursor-pointer transition-colors duration-200" />
+          </Button>
+        ) : null}
       </div>
     </>
   );
