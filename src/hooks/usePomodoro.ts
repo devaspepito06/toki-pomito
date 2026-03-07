@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useTimer } from "react-timer-hook";
 import type { PomodoroMode, PomodoroState, PomodoroActions } from "../types/timer";
 
@@ -28,6 +28,15 @@ export const usePomodoro = (): PomodoroState & PomodoroActions => {
         restart(getExpiryTime(duration), false);
       },
     });
+
+  // Cuando el timer no ha iniciado y el usuario cambia la duración,
+  // actualizar el display automáticamente
+  useEffect(() => {
+    if (!hasStarted) {
+      restart(getExpiryTime(duration), false);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [duration]);
 
   const handleModeChange = (newMode: PomodoroMode) => {
     setMode(newMode);
