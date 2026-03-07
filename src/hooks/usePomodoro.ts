@@ -1,6 +1,11 @@
 import { useState, useMemo, useEffect } from "react";
 import { useTimer } from "react-timer-hook";
-import type { PomodoroMode, PomodoroState, PomodoroActions } from "../types/timer";
+import type {
+  PomodoroMode,
+  PomodoroState,
+  PomodoroActions,
+} from "../types/timer";
+import { useLocalStorage } from "./useLocalStorage";
 
 const getExpiryTime = (mins: number): Date => {
   const time = new Date();
@@ -9,8 +14,8 @@ const getExpiryTime = (mins: number): Date => {
 };
 
 export const usePomodoro = (): PomodoroState & PomodoroActions => {
-  const [focusTime, setFocusTime] = useState(25);
-  const [breakTime, setBreakTime] = useState(5);
+  const [focusTime, setFocusTime] = useLocalStorage("pomodoroFocusTime", 25);
+  const [breakTime, setBreakTime] = useLocalStorage("pomodoroBreakTime", 5);
   const [mode, setMode] = useState<PomodoroMode>("focus");
   const [hasStarted, setHasStarted] = useState(false);
 
@@ -35,7 +40,7 @@ export const usePomodoro = (): PomodoroState & PomodoroActions => {
     if (!hasStarted) {
       restart(getExpiryTime(duration), false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [duration]);
 
   const handleModeChange = (newMode: PomodoroMode) => {
