@@ -103,7 +103,7 @@ export const Navbar = ({
           </div>
 
           <p className="text-gray-600 text-xs">
-            Los cambios se aplican al siguiente inicio o reset.
+            The changes will be applied on the next startup or reset.
           </p>
         </div>
       </div>
