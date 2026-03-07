@@ -22,30 +22,14 @@ export const App = () => {
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center">
-      <Navbar />
+      <Navbar
+        focusTime={focusTime}
+        breakTime={breakTime}
+        setFocusTime={setFocusTime}
+        setBreakTime={setBreakTime}
+      />
       <div className="h-screen w-2/3 flex flex-col justify-center items-center">
 
-        {/* Config Inputs — solo visible en desarrollo */}
-        {import.meta.env.MODE === "development" && (
-          <div className="bg-blue-300">
-            <div>
-              <label>Enfoque (min): </label>
-              <input
-                type="number"
-                value={focusTime}
-                onChange={(e) => setFocusTime(Number(e.target.value))}
-              />
-            </div>
-            <div>
-              <label>Descanso (min): </label>
-              <input
-                type="number"
-                value={breakTime}
-                onChange={(e) => setBreakTime(Number(e.target.value))}
-              />
-            </div>
-          </div>
-        )}
 
         <ModeSelector mode={mode} onModeChange={handleModeChange} />
         <TimerDisplay minutes={minutes} seconds={seconds} />
