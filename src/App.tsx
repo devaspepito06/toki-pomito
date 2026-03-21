@@ -21,25 +21,24 @@ export const App = () => {
   } = usePomodoro();
 
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center">
-      <Navbar
-        focusTime={focusTime}
-        breakTime={breakTime}
-        setFocusTime={setFocusTime}
-        setBreakTime={setBreakTime}
-      />
-      <div className="h-screen w-2/3 flex flex-col justify-center items-center">
-
-
-        <ModeSelector mode={mode} onModeChange={handleModeChange} />
-        <TimerDisplay minutes={minutes} seconds={seconds} />
-        <TimerControls
-          isRunning={isRunning}
-          hasStarted={hasStarted}
-          onStartPause={handleStartPause}
-          onReset={handleReset}
+    <div className="flex min-h-svh justify-center">
+      <div className="flex w-[30%] flex-col text-sm leading-loose">
+        <Navbar
+          focusTime={focusTime}
+          breakTime={breakTime}
+          setFocusTime={setFocusTime}
+          setBreakTime={setBreakTime}
         />
-
+        <div className="h-full flex flex-col items-center justify-center">
+          <ModeSelector mode={mode} onModeChange={handleModeChange} />
+          <TimerDisplay minutes={minutes} seconds={seconds} />
+          <TimerControls
+            isRunning={isRunning}
+            hasStarted={hasStarted}
+            onStartPause={handleStartPause}
+            onReset={handleReset}
+          />
+        </div>
       </div>
     </div>
   );
